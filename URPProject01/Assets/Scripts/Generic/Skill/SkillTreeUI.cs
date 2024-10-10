@@ -79,7 +79,34 @@ public class SkillTreeUI : MonoBehaviour
 
     private void OnSkillNodeClicked(string skillId)
     {
-        SkillNode node = skillTree.Get
+        SkillNode node = skillTree.GetNode(skillId);
+
+        if (node == null) return;
+
+        if (node.isUnlocked)
+        {
+            if (skillTree.LockSkill(skillId))
+            {
+                totalSkillPoint++;
+                UpdateSkillPointsUI();
+                UpdateNodeUI(node);
+                UpdateConnectedSkills(skillId);
+            }
+            else
+            {
+                Debug.Log("관련 연계 스킬이 있어서 해제가 안됩니다.");
+            }
+        }
+        else if (totalSkillPoint > 0 && CanUnlockSkill(node))
+        {
+            if (skillTree.UnlockSkill(skillId))
+            {
+                totalSkillPoint--;
+                UpdateSkillPointsUI();
+                UpdateNodeUI(node);
+                UpdateConnectedSkills(skillId);
+            }
+        }
     }
 
     private void UpdateNodeUI(SkillNode node)
@@ -121,35 +148,4 @@ public class SkillTreeUI : MonoBehaviour
         }
     }
 
-    private void OnSkillNodeClicked(string skillId)
-    {
-        SkillNode node = skillTree.GetNode(skillId);
-
-        if (node == null) return;
-
-        if (node.isUnlocked)
-        {
-            if (skillTree.LockSkill(skillId))
-            {
-                totalSkillPoint++;
-                UpdateSkillPointsUI();
-                UpdateNodeUI(node);
-                UpdateConnectedSkills(skillId);
-            }
-            else
-            {
-                Debug.Log("관련 연계 스킬이있어서 해제가 안됩니다");
-            }
-        }
-        else if(totalSkillPoint > 0 && CanUnlockSkil(node))
-        {
-            if(skillTree,UnlockSkill(skillId))
-            {
-                totalSkillPoint--;
-                UpdateSkillPointsUI();
-                UpdateNodeUI(node);
-                UpdateConnectedSkills(skillId);
-            }
-        }
-    }
 }
