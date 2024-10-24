@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class SkillTreeUI : MonoBehaviour
 {
     public SkillTree skillTree;
-    public GameObject skillnodePrefabs;
+    public GameObject skillNodePrefabs;
     public RectTransform skillTreePanel;
     public float NodeSpacing = 100f;
     public Text SkillPointText;
@@ -17,7 +17,7 @@ public class SkillTreeUI : MonoBehaviour
     void Start()
     {
         InitalizeSkillTree();
-        CreateSkillNodeUI();
+        CreateSkillTreeUI();
         UpdateSkillPointsUI();
     }
 
@@ -26,54 +26,54 @@ public class SkillTreeUI : MonoBehaviour
         skillTree = new SkillTree();
 
         skillTree.AddNode(new SkillNode("Fireball1", "Fireball1",
-            new SkillTreeUI<ISkillTarget, DamageEffect>("Fireball1", new DamageEffect(20)),
+            new Skill<ISkillTarget, DamageEffect>("Fireball1", new DamageEffect(20)),
             new Vector2(0, 0), "Fireball", 1));
 
         skillTree.AddNode(new SkillNode("Fireball2", "Fireball2",
-            new SkillTreeUI<ISkillTarget, DamageEffect>("Fireball2", new DamageEffect(30)),
-            new Vector2(0, 1), "Fireball", 2, new List<string> { "Fireball1" }));
+           new Skill<ISkillTarget, DamageEffect>("Fireball2", new DamageEffect(30)),
+           new Vector2(0, 1), "Fireball", 2, new List<string> { "Fireball1" }));
 
         skillTree.AddNode(new SkillNode("Fireball3", "Fireball3",
-            new SkillTreeUI<ISkillTarget, DamageEffect>("Fireball3", new DamageEffect(40)),
-            new Vector2(0, 2), "Fireball", 3, new List<string> { "Fireball2" }));
+           new Skill<ISkillTarget, DamageEffect>("Fireball3", new DamageEffect(40)),
+           new Vector2(0, 2), "Fireball", 3, new List<string> { "Fireball2" }));
 
         skillTree.AddNode(new SkillNode("Fireball4", "Fireball4",
-            new SkillTreeUI<ISkillTarget, DamageEffect>("Fireball4", new DamageEffect(50)),
-            new Vector2(0, 3), "Fireball", 4, new List<string> { "Fireball3" }));
+           new Skill<ISkillTarget, DamageEffect>("Fireball4", new DamageEffect(50)),
+           new Vector2(0, 3), "Fireball", 4, new List<string> { "Fireball3" }));
 
         skillTree.AddNode(new SkillNode("FireBolt1", "FireBolt1",
-            new SkillTreeUI<ISkillTarget, DamageEffect>("FireBolt1", new DamageEffect(90)),
-            new Vector2(1, 2), "FireBolt", 1, new List<string> { "Fireball2" }));
+           new Skill<ISkillTarget, DamageEffect>("FireBolt1", new DamageEffect(90)),
+           new Vector2(1, 2), "FireBolt", 1, new List<string> { "Fireball2" }));
 
         skillTree.AddNode(new SkillNode("FireBolt2", "FireBolt2",
-            new SkillTreeUI<ISkillTarget, DamageEffect>("FireBolt2", new DamageEffect(140)),
-            new Vector2(2, 2), "FireBolt", 2, new List<string> { "FireBolt1" }));
+           new Skill<ISkillTarget, DamageEffect>("FireBolt2", new DamageEffect(140)),
+           new Vector2(2, 2), "FireBolt", 2, new List<string> { "FireBolt1" }));
 
         skillTree.AddNode(new SkillNode("FireBolt3", "FireBolt3",
-            new SkillTreeUI<ISkillTarget, DamageEffect>("FireBolt3", new DamageEffect(240)),
-            new Vector2(3, 2), "FireBolt", 3, new List<string> { "FireBolt2" }));
+          new Skill<ISkillTarget, DamageEffect>("FireBolt3", new DamageEffect(240)),
+          new Vector2(3, 2), "FireBolt", 3, new List<string> { "FireBolt2" }));
     }
 
-    void CreaeSkillTreeUI()
+    void CreateSkillTreeUI()
     {
         foreach (var node in skillTree.Nodes)
         {
-            CreareSkillNodeUI(node);
+            CreateSkillNodeUI(node);
         }
     }
 
     void CreateSkillNodeUI(SkillNode node)
     {
-        GameObject nodeObj = Instantiate(skillnodePrefabs, skillTreePanel);
-        RectTransform rectTransform = nodeObj.GetComponent<rectTransform>();
+        GameObject nodeObj = Instantiate(skillNodePrefabs, skillTreePanel);
+        RectTransform rectTransform = nodeObj.GetComponent<RectTransform>();
         rectTransform.anchoredPosition = node.Position * NodeSpacing;
 
-        skillButtons button = nodeObj.GetComponent<button> ();
-        Text text = nodeObj.GetComponentInChildren<text> ();
+        Button button = nodeObj.GetComponent<Button>();
+        Text text = nodeObj.GetComponentInChildren<Text>();
         text.text = node.Name;
 
-        button.onClick.AddListener(() => OnSkillNodeClicked(node));
-        skillButtons[node.Name] = button;
+        button.onClick.AddListener(() => OnSkillNodeClicked(node.Id));
+        skillButtons[node.Id] = button;
         UpdateNodeUI(node);
     }
 
@@ -109,9 +109,10 @@ public class SkillTreeUI : MonoBehaviour
         }
     }
 
+
     private void UpdateNodeUI(SkillNode node)
     {
-        if (skillButtons. TryGetValue(node.Id, out Button button))
+        if (skillButtons.TryGetValue(node.Id, out Button button))
         {
             bool canUnlock = !node.isUnlocked && CanUnlockSkill(node);
             button.interactable = (canUnlock && totalSkillPoint > 0) || node.isUnlocked;
@@ -119,33 +120,31 @@ public class SkillTreeUI : MonoBehaviour
         }
     }
 
-    private bool CanUnlockSkill(SkillNode node)
+    private bool CanUnlockSkill(SkillNode node)                     //Lock 해제 관련 함수 
     {
-        foreach (var requiedSkillId in node.RequiredSkillIds)
+        foreach (var requiredSkillId in node.RequiredSkillds)
         {
-            if(!string.IsSkillUnlock(requiredSkillId))
+            if (!skillTree.IsSkillUnlock(requiredSkillId))
             {
                 return false;
             }
         }
-
         return true;
     }
 
     void UpdateSkillPointsUI()
     {
-        SkillPointText.text = $"Skill Points: {totalSkillPoint)";
+        SkillPointText.text = $"Skill Points: {totalSkillPoint}";
     }
 
     void UpdateConnectedSkills(string skillId)
     {
-        foreach(var node in skillTree.Nodes)
+        foreach (var node in skillTree.Nodes)
         {
-            if(node.RequiredSkillds.Contains(skillId))
+            if (node.RequiredSkillds.Contains(skillId))
             {
                 UpdateNodeUI(node);
             }
         }
     }
-
 }

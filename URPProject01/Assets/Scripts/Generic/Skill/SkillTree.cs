@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class SkillNode
 {
     public string Id { get; private set; }
@@ -10,11 +11,11 @@ public class SkillNode
     public List<string> RequiredSkillds { get; private set; }
     public bool isUnlocked { get; set; }
     public Vector2 Position { get; set; }
-    public string SkillSeries {  get; private set; }
+    public string SkillSeries { get; private set; }
     public int SkillLevel { get; private set; }
     public bool IsMaxLevel { get; set; }
 
-    public SkillNode(string id, string name, object skill , Vector2 position , string skillSeries, int skillLevel, List<string> requiredSkillIds = null)
+    public SkillNode(string id, string name, object skill, Vector2 position, string skillSeries, int skillLevel, List<string> requiredSkillIds = null)
     {
         Id = id;
         Name = name;
@@ -24,52 +25,54 @@ public class SkillNode
         RequiredSkillds = requiredSkillIds ?? new List<string>();
         isUnlocked = false;
     }
+}
 
-    public class SkillTree
+
+public class SkillTree
+{
+    public List<SkillNode> Nodes { get; private set; } = new List<SkillNode>();
+    private Dictionary<string, SkillNode> nodeDictionary;
+
+    public SkillTree() 
     {
-        public List<SkillNode> Nodes { get; private set; } = new List<SkillNode>();
-        private Dictionary<string, SkillNode> nodeDictionary;
+        Nodes = new List<SkillNode>();
+        nodeDictionary = new Dictionary<string, SkillNode>();
+    }
 
-        public SkillTree()
-        {
-            Nodes = new List<SkillNode>();
-            nodeDictionary = new Dictionary<string, SkillNode>();
-        }
+    public void AddNode(SkillNode node)
+    {
+        Nodes.Add(node);
+        nodeDictionary[node.Id] = node;
+    }
 
-        public void AddNode(SkillNode node)
+    public bool UnlockSkill(string skillId)
+    {
+        if (nodeDictionary.TryGetValue(skillId, out SkillNode node))
         {
-            Nodes.Add(node);
-            nodeDictionary[node.Id] = node;
-        }
+            if (node.isUnlocked) return false;
 
-        public bool UnlockSkill(string skillId)
-        {
-            if (nodeDictionary.TryGetValue(skillId, out SkillNode node))
+            foreach (var requiredSkillId in node.RequiredSkillds)
             {
-                if (node.isUnlocked) return false;
-
-                foreach (var requriedSkillId in node.RequiredSkillds)
+                if (!nodeDictionary[requiredSkillId].isUnlocked)
                 {
-                    if (!nodeDictionary[requiredSkillId].isUnlocked)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                node.isUnlocked = true;
-                return true;
             }
+            node.isUnlocked = true;
+            return true;
         }
+        return false;
     }
 
     public bool LockSkill(string skillId)
     {
-        if (nodeDitionary.TryGetValue(skillId, out SkillNode node))
+        if (nodeDictionary.TryGetValue(skillId, out SkillNode node))
         {
-            if(!node.isUnlocked) return false;
+            if (!node.isUnlocked) return false;
 
-            foreach(var otherNode in Nodes)
+            foreach (var otherNode in Nodes)
             {
-                if (otherNode.isUnlocked && otherNode.RequiredSkillds.Contains(SkillId))
+                if (otherNode.isUnlocked && otherNode.RequiredSkillds.Contains(skillId))
                 {
                     return false;
                 }
@@ -81,4 +84,21 @@ public class SkillNode
 
         return false;
     }
+
+    public bool IsSkillUnlock(string skillId)
+    {
+        return nodeDictionary.TryGetValue(skillId, out SkillNode node) && node.isUnlocked;
+    }
+
+    public SkillNode GetNode(string skillId)
+    {
+        nodeDictionary.TryGetValue(skillId, out SkillNode node);
+        return node;
+    }
+
+    public List<SkillNode> GetAllNodes()
+    {
+        return new List<SkillNode>(Nodes);
+    }
+
 }
