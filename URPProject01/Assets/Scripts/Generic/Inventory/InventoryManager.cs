@@ -4,20 +4,20 @@ using UnityEngine;
 public interface IItem
 {
     string Name { get; }
-    int ID { get; }
+    int Id { get; }
     void Use();
 }
 
 public class Weapon : IItem
 {
     public string Name { get; private set; }
-    public int ID { get; private set; }
+    public int Id { get; private set; }
     public int Damage { get; private set; }
 
     public Weapon(string name, int id, int damage)
     {
         Name = name;
-        ID = id;
+        Id = id;
         Damage = damage;
     }
     public void Use()
@@ -67,7 +67,7 @@ public class Inventory<T> where T : IItem
     {
         foreach (var item in items)
         {
-            Debug.Log($"Item: {item.Name} , ID : {item.ID}");
+            Debug.Log($"Item: {item.Name} , ID : {item.Id}");
         }
     }
 }
@@ -96,7 +96,7 @@ public class InventoryManager : MonoBehaviour
             playerInventory.UseItem(0);
         }
 
-        if (Input.GetKeydown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             playerInventory.AddItem(new Weapon("Sword", 1, 10));
         }

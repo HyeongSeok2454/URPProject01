@@ -26,8 +26,8 @@ public class DamageEffect : ISkillEffect
     {
         if (target is PlayerTarget playertarget)
         {
-            playertarget.health -= Damage;
-            Debug.Log($"Player took {Damage} damage. Remaining health : {playertarget.health}");
+            playertarget.Health -= Damage;
+            Debug.Log($"Player took {Damage} damage. Remaining health : {playertarget.Health}");
         }
         else if (target is EnemyTarget enemyTarget)
         {

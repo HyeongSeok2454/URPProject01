@@ -17,7 +17,7 @@ namespace MyGame.QuestSystem
             this.requiredAmount = requiredAmount;
             this.currentAmount = 0;
         }
-        public bool IsMet() => currentAmount >= currentAmount;
+        public bool IsMet() => currentAmount >= requiredAmount;
         public void Initialize() => currentAmount = 0;
         public float GetProgress() => (float)currentAmount / currentAmount;
         public string GetDescription() => $"Defeat {currentAmount} {itemId} ({currentAmount}/{requiredAmount})";

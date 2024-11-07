@@ -17,7 +17,7 @@ public class ScoreUI : MonoBehaviour
 
     void UpdateScore(int newScore)
     {
-        Debug.Lop($"Score update: {newScore}");
+        Debug.Log($"Score update: {newScore}");
     }
     void ShowGameOver()
     {

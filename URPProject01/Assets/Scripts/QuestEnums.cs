@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace MyGame.QuestSystem
 {
-    public enum QuestSatus
+    public enum QuestStatus
     {
         NotStarted,
         InProgress,
